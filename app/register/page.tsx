@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { supabase } from '@/lib/supabaseClient' // Supabaseクライアントをインポート
+import { useToast } from '@/hooks/use-toast' // トーストフックをインポート
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -21,19 +23,35 @@ export default function Register() {
     gender: ''
   })
   const [error, setError] = useState('');
+  const { toast } = useToast();
+
 
   const handleChange = (name: string, value: string) => {
     setFormData(prevData => ({ ...prevData, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.password !== formData.passwordConfirm) {
       setError('パスワードが一致しません。');
       return;
     }
-    // TODO: Implement registration logic with Supabase
-    console.log('Registration attempt', formData)
+
+    // Supabaseを使ってユーザー登録を実装
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    // 登録成功時にトーストメッセージを表示
+    toast({ title: '成功', description: '登録が成功しました！メールアドレスを確認してください。', type: 'foreground' });
+
+    console.log('Registration attempt', formData);
   }
 
   return (
@@ -141,7 +159,7 @@ export default function Register() {
         </div>
         <div className="mb-4">
           <Label htmlFor="gender">性別</Label>
-          <Select onValueChange={(value) => handleChange('gender', value)}>
+          <Select onValueChange={(value: string) => handleChange('gender', value)}>
             <SelectTrigger>
               <SelectValue placeholder="性別を選択" />
             </SelectTrigger>

@@ -165,7 +165,7 @@ function toast({ ...props }: Toast) {
       ...props,
       id,
       open: true,
-      onOpenChange: (open) => {
+      onOpenChange: (open: boolean) => { // 型を明示的に指定
         if (!open) dismiss(); // トーストが閉じられたときに非表示にする
       },
     },
