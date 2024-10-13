@@ -11,13 +11,16 @@ export default function Register() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    realName: '',
+    passwordConfirm: '',
+    lastName: '',
+    firstName: '',
     handleName: '',
     country: '',
     phoneNumber: '',
     birthday: '',
     gender: ''
   })
+  const [error, setError] = useState('');
 
   const handleChange = (name: string, value: string) => {
     setFormData(prevData => ({ ...prevData, [name]: value }))
@@ -25,6 +28,10 @@ export default function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (formData.password !== formData.passwordConfirm) {
+      setError('パスワードが一致しません。');
+      return;
+    }
     // TODO: Implement registration logic with Supabase
     console.log('Registration attempt', formData)
   }
@@ -56,13 +63,35 @@ export default function Register() {
           />
         </div>
         <div className="mb-4">
-          <Label htmlFor="realName">本名</Label>
+          <Label htmlFor="passwordConfirm">パスワード確認</Label>
+          <Input
+            type="password"
+            id="passwordConfirm"
+            name="passwordConfirm"
+            value={formData.passwordConfirm}
+            onChange={(e) => handleChange('passwordConfirm', e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <Label htmlFor="lastName">姓</Label>
           <Input
             type="text"
-            id="realName"
-            name="realName"
-            value={formData.realName}
-            onChange={(e) => handleChange('realName', e.target.value)}
+            id="lastName"
+            name="lastName"
+            value={formData.lastName}
+            onChange={(e) => handleChange('lastName', e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <Label htmlFor="firstName">名</Label>
+          <Input
+            type="text"
+            id="firstName"
+            name="firstName"
+            value={formData.firstName}
+            onChange={(e) => handleChange('firstName', e.target.value)}
             required
           />
         </div>
